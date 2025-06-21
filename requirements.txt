@@ -11,3 +11,4 @@ pytesseract
 easyocr
 opencv-python
 Pillow
+sentence-transformers
