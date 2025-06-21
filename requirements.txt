@@ -12,3 +12,4 @@ easyocr
 opencv-python
 Pillow
 sentence-transformers
+openpyxl
