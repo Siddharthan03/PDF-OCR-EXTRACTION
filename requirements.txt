@@ -1,11 +1,13 @@
 streamlit
 openai
 langchain
+langchain-openai
+langchain-community
 pymupdf
 python-dotenv
 faiss-cpu
 tiktoken
-langchain-community
 pytesseract
+easyocr
 opencv-python
 Pillow
