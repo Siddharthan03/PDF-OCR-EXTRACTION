@@ -1,13 +1,5 @@
 services:
   - type: web
     name: pdf-ocr-extraction
-    env: python
+    env: docker
     plan: free
-    buildCommand: |
-      apt-get update && apt-get install -y tesseract-ocr
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
