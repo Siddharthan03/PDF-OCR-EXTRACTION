@@ -10,16 +10,16 @@ from utils.pdfloader import extract_text_from_pdf, chunk_text
 from utils.vectorstore import create_vectorstore
 from utils.queryengine import answer_query
 
-# Load .env variables
+# Load environment variables
 load_dotenv()
 
-# Set tesseract path explicitly for Render deployment
+# Set tesseract path for Render deployment
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
-# Set page config
-st.set_page_config(page_title="PDF OCR EXTRACTION")
+# Page configuration
+st.set_page_config(page_title="PDF OCR Extraction")
 
-# ✅ Inject custom font from static folder
+# Inject custom font
 st.markdown(
     """
     <style>
@@ -36,23 +36,24 @@ st.markdown(
 )
 
 # Title
-st.title("PDF OCR EXTRACTION")
+st.title("📄 PDF OCR Extraction Tool")
 
 # File upload
 uploaded_file = st.file_uploader(
-    "Upload a Document", 
-    type=["pdf", "xlsx", "xls", "png", "jpg", "jpeg"]
+    "📎 Upload a document",
+    type=["pdf", "xlsx", "xls", "png", "jpg", "jpeg"],
+    help="Supported formats: PDF, Excel, Image files"
 )
 
 if uploaded_file:
-    # Save uploaded file temporarily
+    # Save file temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.read())
         file_path = tmp_file.name
 
     st.success(f"✅ File '{uploaded_file.name}' uploaded successfully!")
 
-    # Detect file type
+    # Extract text
     file_ext = uploaded_file.name.lower().split(".")[-1]
     text = ""
 
@@ -72,27 +73,20 @@ if uploaded_file:
         st.error(f"❌ Failed to extract text: {str(e)}")
         st.stop()
     finally:
-        os.remove(file_path)  # Always delete temp file
+        os.remove(file_path)
 
+    # If text found, process it
     if text.strip():
-        st.markdown("### 🧾 Extracted Text Preview")
-        st.text_area("Extracted Text", text, height=200)
-
-        # Chunk and create vectorstore
         chunks = chunk_text(text)
         vectorstore = create_vectorstore(chunks)
 
-        # Search input
-        query = st.text_input(
-            "🔍 Search the Document", 
-            placeholder="Ask a question from the uploaded document..."
-        )
-
-        if query.strip():
-            try:
-                answer = answer_query(query, vectorstore)
-                st.markdown(f"**Answer:** {answer}")
-            except Exception as e:
-                st.error(f"❌ Error while answering: {str(e)}")
+        # Auto-run structured query
+        query = "Extract all the important information and display it as a table."
+        try:
+            answer = answer_query(query, vectorstore)
+            st.markdown("### 📋 Extracted Structured Information")
+            st.markdown(answer, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"❌ Error while answering: {str(e)}")
     else:
-        st.warning("⚠️ Could not extract any readable text from the document.")
+        st.warning("⚠️ No readable text could be extracted from the uploaded file.")
