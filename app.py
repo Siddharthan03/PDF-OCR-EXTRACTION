@@ -11,11 +11,32 @@ from utils.pdfloader import extract_text_from_pdf, chunk_text
 from utils.vectorstore import create_vectorstore
 from utils.queryengine import answer_query
 
+# Load .env variables
 load_dotenv()
 
+# Set page config
 st.set_page_config(page_title="PDF OCR EXTRACTION")
+
+# ✅ Inject custom font from /static/ folder
+st.markdown(
+    """
+    <style>
+    @font-face {
+        font-family: 'SourceSans';
+        src: url('/static/SourceSansVF-Upright.ttf.woff2');
+    }
+    html, body, [class*="css"]  {
+        font-family: 'SourceSans', sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Title
 st.title("PDF OCR EXTRACTION")
 
+# File upload
 uploaded_file = st.file_uploader("Upload a Document", type=["pdf", "xlsx", "xls", "png", "jpg", "jpeg"])
 
 if uploaded_file:
@@ -25,23 +46,25 @@ if uploaded_file:
 
     st.success(f"✅ File '{uploaded_file.name}' uploaded successfully!")
 
-    # Detect file type
+    # Detect file type and extract text
     file_ext = uploaded_file.name.lower().split(".")[-1]
     text = ""
 
-    if file_ext == "pdf":
-        text = extract_text_from_pdf(file_path)
-    elif file_ext in ["xlsx", "xls"]:
-        df = pd.read_excel(file_path)
-        text = df.to_string(index=False)
-    elif file_ext in ["png", "jpg", "jpeg"]:
-        image = Image.open(file_path)
-        text = pytesseract.image_to_string(image)
-    else:
-        st.error("❌ Unsupported file type.")
-        os.remove(file_path)
-
-    os.remove(file_path)
+    try:
+        if file_ext == "pdf":
+            text = extract_text_from_pdf(file_path)
+        elif file_ext in ["xlsx", "xls"]:
+            df = pd.read_excel(file_path)
+            text = df.to_string(index=False)
+        elif file_ext in ["png", "jpg", "jpeg"]:
+            image = Image.open(file_path)
+            text = pytesseract.image_to_string(image)
+        else:
+            st.error("❌ Unsupported file type.")
+            os.remove(file_path)
+            st.stop()
+    finally:
+        os.remove(file_path)  # Ensure temp file is deleted
 
     if text.strip():
         st.markdown("### 🧾 Extracted Text Preview")
@@ -51,10 +74,9 @@ if uploaded_file:
         chunks = chunk_text(text)
         vectorstore = create_vectorstore(chunks)
 
-        # 📌 Show search input field immediately after preview
+        # Search input
         query = st.text_input("🔍 Search the Document", placeholder="Ask a question from the uploaded document...")
 
-        # When user enters a query
         if query.strip():
             try:
                 answer = answer_query(query, vectorstore)
