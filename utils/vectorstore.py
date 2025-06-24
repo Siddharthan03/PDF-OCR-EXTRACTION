@@ -1,9 +1,10 @@
-from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
 from langchain.docstore.document import Document
 
-def create_vectorstore(documents):
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    if not all(isinstance(doc, Document) for doc in documents):
-        raise ValueError("All inputs to create_vectorstore must be Document objects")
-    return FAISS.from_documents(documents, embeddings)
+def create_vectorstore(chunks):
+    # Use the default HuggingFace model which is lighter and less prone to connection errors on Streamlit Cloud
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    docs = [Document(page_content=chunk) for chunk in chunks]
+    vectorstore = FAISS.from_documents(docs, embeddings)
+    return vectorstore
