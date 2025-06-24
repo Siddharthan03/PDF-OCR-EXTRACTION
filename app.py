@@ -83,7 +83,7 @@ if uploaded_file:
         # Debug logging chunk info
         st.write(f"ℹ️ Number of text chunks: {len(chunks)}")
         if len(chunks) > 0:
-            st.write(f"ℹ️ Sample chunk: {chunks[0][:300]}")  # Show first 300 chars of first chunk
+            st.write(f"ℹ️ Sample chunk: {chunks[0].page_content[:300]}")  # Show first 300 chars of first chunk
 
         # Validate chunks before vectorstore creation
         if not chunks or len(chunks) == 0:
