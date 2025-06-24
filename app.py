@@ -2,8 +2,8 @@ import streamlit as st
 import tempfile
 import os
 import pandas as pd
+import easyocr
 from PIL import Image
-import pytesseract
 from dotenv import load_dotenv
 
 from utils.pdfloader import extract_text_from_pdf, chunk_text
@@ -12,9 +12,6 @@ from utils.queryengine import answer_query
 
 # Load environment variables
 load_dotenv()
-
-# Set tesseract path for Render deployment
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 # Page configuration
 st.set_page_config(page_title="PDF OCR Extraction")
@@ -64,8 +61,8 @@ if uploaded_file:
             df = pd.read_excel(file_path)
             text = df.to_string(index=False)
         elif file_ext in ["png", "jpg", "jpeg"]:
-            image = Image.open(file_path)
-            text = pytesseract.image_to_string(image)
+            reader = easyocr.Reader(['en'], gpu=False)
+            text = "\n".join(reader.readtext(file_path, detail=0))
         else:
             st.error("❌ Unsupported file type.")
             st.stop()
@@ -78,9 +75,8 @@ if uploaded_file:
     # If text found, process it
     if text.strip():
         chunks = chunk_text(text)
-
         if not chunks or len(chunks) == 0:
-            st.error("❌ No valid text chunks found for vectorstore creation. Please check your document or chunking logic.")
+            st.error("❌ No valid text chunks found for vectorstore creation.")
             st.stop()
 
         try:
