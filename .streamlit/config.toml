@@ -1,4 +1,7 @@
 [server]
-headless = true
 enableCORS = false
+enableXsrfProtection = false
+port = $PORT
+headless = true
+enableWebsocketCompression = false
 address = "0.0.0.0"
