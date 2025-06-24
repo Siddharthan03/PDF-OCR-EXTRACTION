@@ -77,32 +77,18 @@ if uploaded_file:
 
     # If text found, process it
     if text.strip():
-        # Chunk the text
         chunks = chunk_text(text)
 
-        # Debug logging chunk info
-        st.write(f"ℹ️ Number of text chunks: {len(chunks)}")
-
-        # Show first chunk content safely
-        if len(chunks) > 0:
-            if hasattr(chunks[0], "page_content"):
-                st.write(f"ℹ️ Sample chunk: {chunks[0].page_content[:300]}")
-            else:
-                st.write(f"ℹ️ Sample chunk: {chunks[0][:300]}")
-
-        # Validate chunks before vectorstore creation
         if not chunks or len(chunks) == 0:
             st.error("❌ No valid text chunks found for vectorstore creation. Please check your document or chunking logic.")
             st.stop()
 
-        # Create vectorstore safely
         try:
             vectorstore = create_vectorstore(chunks)
         except Exception as e:
             st.error(f"❌ Failed to create vectorstore: {str(e)}")
             st.stop()
 
-        # Auto-run structured query
         query = "Extract all the information and display in clear and understandable form"
         try:
             answer = answer_query(query, vectorstore)
