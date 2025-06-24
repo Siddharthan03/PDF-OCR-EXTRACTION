@@ -103,7 +103,7 @@ if uploaded_file:
             st.stop()
 
         # Auto-run structured query
-        query = "Extract all the important information and display it as a table."
+        query = "Extract all the information and display the information which has to be displayed in a table."
         try:
             answer = answer_query(query, vectorstore)
             st.markdown("### 📋 Extracted Structured Information")
