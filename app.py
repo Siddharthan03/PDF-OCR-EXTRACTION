@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 from utils.pdfloader import extract_text_from_pdf, chunk_text
 from utils.vectorstore import create_vectorstore
 from utils.queryengine import answer_query
-
+import sys
+import streamlit as st
+st.write(f"🔍 Python version: {sys.version}")
 # Load environment variables
 load_dotenv()
 
