@@ -2,18 +2,17 @@ streamlit
 openai
 langchain>=0.2.0
 langchain-openai>=0.0.15
+langchain-community>=0.0.26
+langchain-huggingface>=0.0.2
 pymupdf
 python-dotenv
 faiss-cpu
 tiktoken
 pytesseract
 easyocr
-opencv-python-headless
+opencv-python
 Pillow
 sentence-transformers
 openpyxl
-langchain-huggingface>=0.0.2 
-
-# Add pydantic v2+ explicitly (LangChain v0.2+ needs it)
 pydantic>=2.6
 pydantic-core>=2.16
