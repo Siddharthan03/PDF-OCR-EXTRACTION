@@ -12,10 +12,10 @@ from utils.queryengine import answer_query
 # Page configuration
 st.set_page_config(page_title="PDF OCR Extraction", layout="centered")
 
-# Title
+# App title
 st.title("📄 PDF OCR Extraction Tool")
 
-# File upload
+# File uploader widget
 uploaded_file = st.file_uploader(
     "📎 Upload a document",
     type=["pdf", "xlsx", "xls", "png", "jpg", "jpeg"],
@@ -23,14 +23,14 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file:
-    # Save file temporarily
+    # Save the uploaded file temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.read())
         file_path = tmp_file.name
 
     st.success(f"✅ File '{uploaded_file.name}' uploaded successfully!")
 
-    # Extract text based on file type
+    # Detect file extension
     file_ext = uploaded_file.name.lower().split(".")[-1]
     text = ""
 
@@ -50,9 +50,9 @@ if uploaded_file:
         st.error(f"❌ Failed to extract text: {str(e)}")
         st.stop()
     finally:
-        os.remove(file_path)
+        os.remove(file_path)  # Cleanup
 
-    # Process extracted text
+    # If text was extracted
     if text.strip():
         chunks = chunk_text(text)
         if not chunks:
@@ -65,7 +65,9 @@ if uploaded_file:
             st.error(f"❌ Failed to create vectorstore: {str(e)}")
             st.stop()
 
+        # Ask the model to summarize
         query = "Extract all the information and display in clear and understandable form"
+
         try:
             answer = answer_query(query, vectorstore)
             st.markdown("### 📋 Extracted Structured Information")
