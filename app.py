@@ -4,33 +4,13 @@ import os
 import pandas as pd
 import easyocr
 from PIL import Image
-from dotenv import load_dotenv
 
 from utils.pdfloader import extract_text_from_pdf, chunk_text
 from utils.vectorstore import create_vectorstore
 from utils.queryengine import answer_query
 
-# Load environment variables
-load_dotenv()
-
 # Page configuration
-st.set_page_config(page_title="PDF OCR Extraction")
-
-# Inject custom font
-st.markdown(
-    """
-    <style>
-    @font-face {
-        font-family: 'SourceSans';
-        src: url('/static/SourceSansVF-Upright.ttf.woff2');
-    }
-    html, body, [class*="css"]  {
-        font-family: 'SourceSans', sans-serif;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.set_page_config(page_title="PDF OCR Extraction", layout="centered")
 
 # Title
 st.title("📄 PDF OCR Extraction Tool")
@@ -50,7 +30,7 @@ if uploaded_file:
 
     st.success(f"✅ File '{uploaded_file.name}' uploaded successfully!")
 
-    # Extract text
+    # Extract text based on file type
     file_ext = uploaded_file.name.lower().split(".")[-1]
     text = ""
 
@@ -72,10 +52,10 @@ if uploaded_file:
     finally:
         os.remove(file_path)
 
-    # If text found, process it
+    # Process extracted text
     if text.strip():
         chunks = chunk_text(text)
-        if not chunks or len(chunks) == 0:
+        if not chunks:
             st.error("❌ No valid text chunks found for vectorstore creation.")
             st.stop()
 
