@@ -9,7 +9,7 @@ faiss-cpu
 tiktoken
 pytesseract
 easyocr
-opencv-python
+opencv-python-headless
 Pillow
 sentence-transformers
 openpyxl
