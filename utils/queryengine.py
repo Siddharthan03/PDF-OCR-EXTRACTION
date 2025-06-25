@@ -1,39 +1,27 @@
-import os
 import streamlit as st
 from langchain.chains import RetrievalQA
-from langchain_groq import ChatGroq  # Groq LLM for LangChain
-
-def get_credential(key: str):
-    """
-    Get credential from Streamlit secrets or environment variable.
-    """
-    return st.secrets.get(key) or os.getenv(key)
+from langchain_openai import ChatOpenAI  # Using OpenAI, not Groq
 
 def answer_query(query, vectorstore):
-    # Retrieve credentials safely
-    api_key = get_credential("OPENAI_API_KEY")
-    model_name = get_credential("OPENAI_MODEL_NAME")
-    base_url = get_credential("OPENAI_API_BASE")
+    # Load credentials securely from Streamlit secrets
+    api_key = st.secrets["OPENAI_API_KEY"]
+    model_name = st.secrets["OPENAI_MODEL_NAME"]
+    base_url = st.secrets["OPENAI_API_BASE"]
 
-    # Validate presence of credentials
     if not api_key:
-        raise ValueError("❌ Missing OPENAI_API_KEY.")
+        raise ValueError("Missing OPENAI_API_KEY in Streamlit secrets.")
     if not model_name:
-        raise ValueError("❌ Missing OPENAI_MODEL_NAME.")
+        raise ValueError("Missing OPENAI_MODEL_NAME in Streamlit secrets.")
     if not base_url:
-        raise ValueError("❌ Missing OPENAI_API_BASE.")
+        raise ValueError("Missing OPENAI_API_BASE in Streamlit secrets.")
 
-    # Initialize Groq LLM
-    llm = ChatGroq(
+    llm = ChatOpenAI(
         model_name=model_name,
-        groq_api_key=api_key,
-        base_url=base_url,
+        openai_api_key=api_key,
+        openai_api_base=base_url,
         temperature=0
     )
 
-    # Setup QA chain with vectorstore retriever
     retriever = vectorstore.as_retriever()
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-
-    # Perform the query
     return qa.invoke({"query": query})
