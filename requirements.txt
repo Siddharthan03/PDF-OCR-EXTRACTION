@@ -3,6 +3,8 @@ openai
 langchain>=0.2.0
 langchain-openai>=0.0.15
 langchain-community>=0.0.26
+langchain-huggingface>=0.0.5
+sentence-transformers
 pymupdf
 python-dotenv
 faiss-cpu
