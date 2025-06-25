@@ -1,23 +1,19 @@
 import streamlit as st
 from langchain.chains import RetrievalQA
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
 def answer_query(query, vectorstore):
     api_key = st.secrets["OPENAI_API_KEY"]
-    base_url = st.secrets["OPENAI_API_BASE"]
     model_name = st.secrets["OPENAI_MODEL_NAME"]
 
     if not api_key:
-        raise ValueError("Missing OPENAI_API_KEY in secrets.")
-    if not base_url:
-        raise ValueError("Missing OPENAI_API_BASE in secrets.")
+        raise ValueError("Missing OPENAI_API_KEY in Streamlit secrets.")
     if not model_name:
-        raise ValueError("Missing OPENAI_MODEL_NAME in secrets.")
+        raise ValueError("Missing OPENAI_MODEL_NAME in Streamlit secrets.")
 
-    llm = ChatOpenAI(
+    llm = ChatGroq(
         model_name=model_name,
-        openai_api_key=api_key,
-        openai_api_base=base_url,
+        groq_api_key=api_key,
         temperature=0,
     )
 
