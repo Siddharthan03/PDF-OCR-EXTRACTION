@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
+import streamlit as st
 
 load_dotenv()
 
