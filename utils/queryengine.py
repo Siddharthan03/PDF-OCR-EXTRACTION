@@ -1,22 +1,18 @@
-import os
-from dotenv import load_dotenv
+import streamlit as st
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
-import streamlit as st
-
-load_dotenv()
 
 def answer_query(query, vectorstore):
-    api_key = st.secrets("OPENAI_API_KEY")
-    base_url = st.secrets("OPENAI_API_BASE")
-    model_name = st.secrets("OPENAI_MODEL_NAME")
+    api_key = st.secrets["OPENAI_API_KEY"]
+    base_url = st.secrets["OPENAI_API_BASE"]
+    model_name = st.secrets["OPENAI_MODEL_NAME"]
 
     if not api_key:
-        raise ValueError("Missing OPENAI_API_KEY in environment.")
+        raise ValueError("Missing OPENAI_API_KEY in secrets.")
     if not base_url:
-        raise ValueError("Missing OPENAI_API_BASE in environment.")
+        raise ValueError("Missing OPENAI_API_BASE in secrets.")
     if not model_name:
-        raise ValueError("Missing OPENAI_MODEL_NAME in environment.")
+        raise ValueError("Missing OPENAI_MODEL_NAME in secrets.")
 
     llm = ChatOpenAI(
         model_name=model_name,
