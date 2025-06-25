@@ -1,3 +1,4 @@
+langchain-huggingface>=0.0.5
 streamlit
 openai
 langchain>=0.2.0
