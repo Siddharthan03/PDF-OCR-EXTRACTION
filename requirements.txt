@@ -1,10 +1,9 @@
-langchain-huggingface>=0.0.5
 streamlit
 openai
 langchain>=0.2.0
 langchain-openai>=0.0.15
 langchain-community>=0.0.26
-langchain-huggingface>=0.0.2
+langchain-huggingface>=0.0.5
 pymupdf
 python-dotenv
 faiss-cpu

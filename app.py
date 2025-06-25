@@ -2,10 +2,9 @@ import streamlit as st
 import tempfile
 import os
 import pandas as pd
+import easyocr
 from PIL import Image
 from dotenv import load_dotenv
-
-import pytesseract  # ✅ Using pytesseract for image OCR
 
 from utils.pdfloader import extract_text_from_pdf, chunk_text
 from utils.vectorstore import create_vectorstore
@@ -16,6 +15,22 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(page_title="PDF OCR Extraction")
+
+# Inject custom font
+st.markdown(
+    """
+    <style>
+    @font-face {
+        font-family: 'SourceSans';
+        src: url('/static/SourceSansVF-Upright.ttf.woff2');
+    }
+    html, body, [class*="css"]  {
+        font-family: 'SourceSans', sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Title
 st.title("📄 PDF OCR Extraction Tool")
@@ -42,30 +57,25 @@ if uploaded_file:
     try:
         if file_ext == "pdf":
             text = extract_text_from_pdf(file_path)
-
         elif file_ext in ["xlsx", "xls"]:
             df = pd.read_excel(file_path)
             text = df.to_string(index=False)
-
         elif file_ext in ["png", "jpg", "jpeg"]:
-            image = Image.open(file_path)
-            text = pytesseract.image_to_string(image)
-
+            reader = easyocr.Reader(['en'], gpu=False)
+            text = "\n".join(reader.readtext(file_path, detail=0))
         else:
             st.error("❌ Unsupported file type.")
             st.stop()
-
     except Exception as e:
         st.error(f"❌ Failed to extract text: {str(e)}")
         st.stop()
-
     finally:
         os.remove(file_path)
 
     # If text found, process it
     if text.strip():
         chunks = chunk_text(text)
-        if not chunks:
+        if not chunks or len(chunks) == 0:
             st.error("❌ No valid text chunks found for vectorstore creation.")
             st.stop()
 
