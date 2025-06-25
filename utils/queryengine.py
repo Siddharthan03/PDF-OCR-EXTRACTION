@@ -26,4 +26,4 @@ def answer_query(query, vectorstore):
 
     retriever = vectorstore.as_retriever()
     qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-    return qa.run(query)
+    return qa.invoke({"query": query})
